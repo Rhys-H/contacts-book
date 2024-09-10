@@ -1,0 +1,63 @@
+{{ block "contact-form" . }}
+    <form id="contact-form" hx-post="/contacts" hx-swap="outerHTML">
+        <label for="name">Name</label>
+        <input {{ if .Values }} {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} {{ end }}
+            type="text" name="name" placeholder="Name">
+
+        {{ if (.Errors) }}
+            {{ if (.Errors.name) }}
+                <div class="error">{{ .Errors.name }}</div>
+            {{ end }}
+        {{ end }}
+
+        <label for="email">Email</label>
+        <input {{ if (.Values) }} {{ if (.Values.email) }} value="{{ .Values.email }}" {{ end }} {{ end }}
+            type="email" name="email" placeholder="Email">
+
+        {{ if (.Errors) }}
+            {{ if (.Errors.email) }}
+                <div class="error">{{ .Errors.email }}</div>
+            {{ end }}
+        {{ end }}
+
+        <button type="submit">Submit</button>
+    </form>
+{{ end }}
+
+{{ block "contacts" . }}
+    <div id="contacts">
+        {{ range .Contacts }}
+            {{ template "contact" . }}
+        {{ end }}
+    </div>
+{{ end }}
+
+{{ block "contact" . }}
+    <div class="contact" id="contact-{{ .Id }}">
+        <div hx-delete="/contacts/{{ .Id }}" hx-swap="outerHTML swap:500ms" hx-target="#contact-{{ .Id }}"
+            hx-indicator="#ci-{{ .Id }}" class="delete-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-trash"
+                viewBox="0 0 24 24">
+                <path
+                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                <path
+                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+            </svg>
+        </div>
+
+        <div>
+            <b>Name:</b> <span>{{ .Name }}</span>
+            <b>Email:</b> <span>{{ .Email }}</span>
+        </div>
+
+        <div id="ci-{{ .Id }}" class="htmx-indicator loading-icon">
+            <img src="/images/bars.svg" alt="loading" />
+        </div>
+    </div>
+{{ end }}
+
+{{ block "oob-contact" . }}
+    <div id="contact" hx-swap-oob="beforeend:#contacts">
+        {{ template "contact" . }}
+    </div>
+{{ end }}
